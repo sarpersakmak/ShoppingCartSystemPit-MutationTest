@@ -1,36 +1,40 @@
 package com.example.shopping;
 
 /**
- * Represents a single product in the online shopping system.
- * Each product has:
- *   - id (unique identifier)
- *   - name (non-null, non-empty)
- *   - price (>= 0)
- *   - stock (>= 0)
+ * Represents a product that can be added to a shopping cart.
  *
- * It provides methods to read details and to modify stock levels safely.
+ * <p>A product has an immutable identifier and name, while its price and stock
+ * can change through validated operations.</p>
  */
-public class Product {
+public final class Product {
 
-    // --- Fields ---
     private final int id;
     private final String name;
     private double price;
     private int stock;
 
     /**
-     * Constructor that validates all input fields.
-     * Throws IllegalArgumentException if any validation fails.
+     * Creates a product.
+     *
+     * @param id unique product identifier
+     * @param name non-blank product name
+     * @param price non-negative unit price
+     * @param stock non-negative initial stock
+     * @throws IllegalArgumentException if any value is invalid
      */
     public Product(int id, String name, double price, int stock) {
-        if (name == null)
+        if (name == null) {
             throw new IllegalArgumentException("Product name cannot be null");
-        if (name.trim().isEmpty())
+        }
+        if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("Product name cannot be empty");
-        if (price < 0)
+        }
+        if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
-        if (stock < 0)
+        }
+        if (stock < 0) {
             throw new IllegalArgumentException("Stock cannot be negative");
+        }
 
         this.id = id;
         this.name = name;
@@ -38,53 +42,73 @@ public class Product {
         this.stock = stock;
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public double getPrice() { return price; }
+    public double getPrice() {
+        return price;
+    }
 
-    public int getStock() { return stock; }
-
-    // --- Setters and Operations ---
+    public int getStock() {
+        return stock;
+    }
 
     /**
-     * Updates product price with validation.
-     * @param price new price (must be >= 0)
+     * Updates the product's unit price.
+     *
+     * @param price non-negative unit price
      */
     public void setPrice(double price) {
-        if (price < 0)
+        if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
+        }
+
         this.price = price;
     }
 
     /**
-     * Reduces available stock by the given amount.
-     * Throws IllegalArgumentException if amount < 0 or exceeds available stock.
+     * Reduces the available stock.
+     *
+     * @param amount number of units to reserve
+     * @throws IllegalArgumentException if the amount is negative or exceeds stock
      */
     public void reduceStock(int amount) {
-        if (amount < 0)
+        if (amount < 0) {
             throw new IllegalArgumentException("Amount to reduce cannot be negative");
-        if (amount > stock)
+        }
+        if (amount > stock) {
             throw new IllegalArgumentException("Insufficient stock");
-        this.stock -= amount;
+        }
+
+        stock -= amount;
     }
 
     /**
-     * Increases available stock by the given amount.
-     * Useful when an item is removed from cart.
+     * Returns units to the available stock.
+     *
+     * @param amount number of units to return
+     * @throws IllegalArgumentException if the amount is negative
      */
     public void increaseStock(int amount) {
-        if (amount < 0)
+        if (amount < 0) {
             throw new IllegalArgumentException("Amount to increase cannot be negative");
-        this.stock += amount;
+        }
+
+        stock += amount;
     }
 
     @Override
     public String toString() {
-        return "Product{id=" + id +
-               ", name='" + name + '\'' +
-               ", price=" + price +
-               ", stock=" + stock + '}';
+        return "Product{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", price=" + price
+                + ", stock=" + stock
+                + '}';
     }
 }
