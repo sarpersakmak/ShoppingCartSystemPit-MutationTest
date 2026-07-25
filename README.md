@@ -281,8 +281,3 @@ corresponding Maven command again to regenerate them.
 - Add property-based tests
 - Add continuous integration for unit, coverage, and mutation tests
 - Publish JaCoCo and PIT reports as CI artifacts
-
-## License
-
-No license has been assigned. Add a license file before distributing the
-project under specific reuse terms.
