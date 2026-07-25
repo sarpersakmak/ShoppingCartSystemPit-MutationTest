@@ -112,4 +112,57 @@ public class ShoppingCartTest {
         cart.addItem(p, 3);
         assertEquals(5, cart.getItems().get(p));
     }
+
+    @Test
+    public void removeItem_nullProduct_throws() {
+        ShoppingCart cart = new ShoppingCart();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> cart.removeItem(null, 1));
+    }
+
+    @Test
+    public void removeItem_nonPositiveQuantity_throwsWithoutChangingCart() {
+        Product product = new Product(1, "Book", 10, 5);
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItem(product, 2);
+
+        assertAll(
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.removeItem(product, 0)),
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.removeItem(product, -1)),
+                () -> assertEquals(2, cart.getItems().get(product)),
+                () -> assertEquals(3, product.getStock()));
+    }
+
+    @Test
+    public void getItems_isUnmodifiable() {
+        Product product = new Product(1, "Book", 10, 5);
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItem(product, 1);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> cart.getItems().put(product, 2));
+    }
+
+    @Test
+    public void clear_multipleProducts_returnsAllReservedStock() {
+        Product book = new Product(1, "Book", 10, 5);
+        Product pen = new Product(2, "Pen", 2, 8);
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem(book, 2);
+        cart.addItem(pen, 3);
+        cart.clear();
+
+        assertAll(
+                () -> assertTrue(cart.isEmpty()),
+                () -> assertEquals(5, book.getStock()),
+                () -> assertEquals(8, pen.getStock()));
+    }
 }
