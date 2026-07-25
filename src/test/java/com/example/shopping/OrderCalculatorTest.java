@@ -63,4 +63,26 @@ public class OrderCalculatorTest {
         double result = OrderCalculator.calculate(subtotal, discount, tax);
         assertEquals(expected, result, 0.001);
     }
+
+    @Test
+    public void discountAboveMaximum_throws() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> OrderCalculator.calculate(100, 101, 10));
+    }
+
+    @Test
+    public void negativeTaxRate_throws() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> OrderCalculator.calculate(100, 10, -1));
+    }
+
+    @Test
+    public void boundaryPercentages_areAccepted() {
+        assertAll(
+                () -> assertEquals(100, OrderCalculator.calculate(100, 0, 0), 0.001),
+                () -> assertEquals(0, OrderCalculator.calculate(100, 100, 0), 0.001),
+                () -> assertEquals(200, OrderCalculator.calculate(100, 0, 100), 0.001));
+    }
 }
