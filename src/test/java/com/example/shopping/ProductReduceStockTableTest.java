@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Table-Based Testing for Product.reduceStock()
- * 
+ *
  * Decision Table with 8 test cases covering all condition combinations
  */
 public class ProductReduceStockTableTest {
@@ -16,7 +16,7 @@ public class ProductReduceStockTableTest {
     @Test
     public void tableTest_TC1_negativeAmount_throwsException() {
         Product p = new Product(1, "Item", 10.0, 5);
-        Exception exception = assertThrows(IllegalArgumentException.class, 
+        Exception exception = assertThrows(IllegalArgumentException.class,
             () -> p.reduceStock(-1));
         assertEquals("Amount to reduce cannot be negative", exception.getMessage());
         assertEquals(5, p.getStock()); // Stock unchanged
@@ -28,7 +28,7 @@ public class ProductReduceStockTableTest {
     @Test
     public void tableTest_TC2_amountExceedsStock_throwsException() {
         Product p = new Product(1, "Item", 10.0, 5);
-        Exception exception = assertThrows(IllegalArgumentException.class, 
+        Exception exception = assertThrows(IllegalArgumentException.class,
             () -> p.reduceStock(10));
         assertEquals("Insufficient stock", exception.getMessage());
         assertEquals(5, p.getStock()); // Stock unchanged
@@ -70,7 +70,7 @@ public class ProductReduceStockTableTest {
     @Test
     public void tableTest_TC6_reduceFromZeroStock_throwsException() {
         Product p = new Product(1, "Item", 10.0, 0);
-        Exception exception = assertThrows(IllegalArgumentException.class, 
+        Exception exception = assertThrows(IllegalArgumentException.class,
             () -> p.reduceStock(1));
         assertEquals("Insufficient stock", exception.getMessage());
         assertEquals(0, p.getStock()); // Stock unchanged
@@ -92,12 +92,12 @@ public class ProductReduceStockTableTest {
     @Test
     public void tableTest_TC8_negativeAmountZeroStock_throwsException() {
         Product p = new Product(1, "Item", 10.0, 0);
-        Exception exception = assertThrows(IllegalArgumentException.class, 
+        Exception exception = assertThrows(IllegalArgumentException.class,
             () -> p.reduceStock(-5));
         assertEquals("Amount to reduce cannot be negative", exception.getMessage());
         assertEquals(0, p.getStock()); // Stock unchanged
     }
-    
+
     // Bonus TC9: Boundary test - reduce by 1 from stock of 1
     @Test
     public void tableTest_TC9_reduceLastItem_stockBecomesZero() {
@@ -105,7 +105,7 @@ public class ProductReduceStockTableTest {
         p.reduceStock(1);
         assertEquals(0, p.getStock());
     }
-    
+
     // Bonus TC10: Large numbers test
     @Test
     public void tableTest_TC10_largeNumbers_worksCorrectly() {
