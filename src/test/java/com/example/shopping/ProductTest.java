@@ -145,4 +145,28 @@ public class ProductTest {
         Product p = new Product(1, "Lamp", 5.0, 2);
         assertTrue(p.toString().contains("Lamp"));
     }
+
+    @Test
+    public void increaseStock_zeroLeavesStockUnchanged() {
+        Product product = new Product(1, "Book", 5, 5);
+
+        product.increaseStock(0);
+
+        assertEquals(5, product.getStock());
+    }
+
+    @Test
+    public void validationMessages_areDescriptive() {
+        IllegalArgumentException nameError = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Product(1, " ", 5, 1));
+
+        IllegalArgumentException priceError = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Product(1, "Book", -1, 1));
+
+        assertAll(
+                () -> assertEquals("Product name cannot be empty", nameError.getMessage()),
+                () -> assertEquals("Price cannot be negative", priceError.getMessage()));
+    }
 }
