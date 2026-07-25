@@ -5,92 +5,109 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a customer's shopping cart.
- * 
- * The cart holds products and their quantities.
- * Each time an item is added:
- *   - It checks stock availability.
- *   - It decreases the product's stock (reservation).
- * 
- * Each time an item is removed:
- *   - It increases the product's stock (return).
- * 
- * Provides total price calculation and validation checks.
+ * Stores products and their reserved quantities for a single shopping cart.
+ *
+ * <p>Adding an item reserves stock from the product. Removing or clearing an
+ * item returns the corresponding quantity to the product.</p>
  */
-public class ShoppingCart {
+public final class ShoppingCart {
 
-    // Map of Product -> Quantity in the cart
     private final Map<Product, Integer> items = new HashMap<>();
 
     /**
-     * Adds an item to the cart.
-     * @param product Product to add (must not be null)
-     * @param quantity Quantity (must be > 0 and <= product stock)
+     * Adds a positive quantity of a product to the cart.
+     *
+     * @param product product to add
+     * @param quantity number of units to reserve
+     * @throws IllegalArgumentException if the product or quantity is invalid,
+     *                                  or if the product has insufficient stock
      */
     public void addItem(Product product, int quantity) {
-        if (product == null)
+        if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
-        if (quantity <= 0)
+        }
+        if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
-        if (product.getStock() < quantity)
-            throw new IllegalArgumentException("Insufficient stock for " + product.getName());
+        }
+        if (product.getStock() < quantity) {
+            throw new IllegalArgumentException(
+                    "Insufficient stock for " + product.getName());
+        }
 
-        // Reserve stock
+        // Reserve the stock before recording the cart quantity.
         product.reduceStock(quantity);
-
-        // Add to cart or increase quantity
         items.merge(product, quantity, Integer::sum);
     }
 
     /**
-     * Removes quantity of a product from the cart.
-     * Returns that amount of stock back to the product.
+     * Removes a positive quantity of a product from the cart.
+     *
+     * @param product product to remove
+     * @param quantity number of units to remove
+     * @throws IllegalArgumentException if the request is invalid
      */
     public void removeItem(Product product, int quantity) {
-        if (product == null)
+        if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
-        if (!items.containsKey(product))
+        }
+        if (!items.containsKey(product)) {
             throw new IllegalArgumentException("Product not found in cart");
-        if (quantity <= 0)
+        }
+        if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
+        }
 
-        int current = items.get(product);
-        if (quantity > current)
-            throw new IllegalArgumentException("Trying to remove more than present in cart");
+        int currentQuantity = items.get(product);
+        if (quantity > currentQuantity) {
+            throw new IllegalArgumentException(
+                    "Trying to remove more than present in cart");
+        }
 
-        // Return stock to product
         product.increaseStock(quantity);
 
-        if (quantity == current)
-            items.remove(product); // remove completely
-        else
-            items.put(product, current - quantity);
+        if (quantity == currentQuantity) {
+            items.remove(product);
+        } else {
+            items.put(product, currentQuantity - quantity);
+        }
     }
 
-    /** Calculates total price for all items (no tax/discount yet). */
+    /**
+     * Calculates the sum of unit price multiplied by quantity for every item.
+     *
+     * @return current cart subtotal
+     */
     public double getTotalPrice() {
         double total = 0.0;
+
         for (Map.Entry<Product, Integer> entry : items.entrySet()) {
             total += entry.getKey().getPrice() * entry.getValue();
         }
+
         return total;
     }
 
-    /** Checks whether the cart is empty. */
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
-    /** Returns a read-only copy of the cart contents. */
+    /**
+     * Returns an unmodifiable live view of the cart contents.
+     *
+     * @return product-to-quantity mapping
+     */
     public Map<Product, Integer> getItems() {
         return Collections.unmodifiableMap(items);
     }
 
-    /** Clears all items and returns stock to products. */
+    /**
+     * Removes every item and returns all reserved quantities to stock.
+     */
     public void clear() {
-        for (Map.Entry<Product, Integer> e : items.entrySet()) {
-            e.getKey().increaseStock(e.getValue());
+        for (Map.Entry<Product, Integer> entry : items.entrySet()) {
+            entry.getKey().increaseStock(entry.getValue());
         }
+
         items.clear();
     }
 }
